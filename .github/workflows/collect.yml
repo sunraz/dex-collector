@@ -1,7 +1,7 @@
 name: dex-collector-and-detector
 on:
   schedule:
-    - cron: "*/15 * * * *"     # every 15 min (GitHub's minimum reliable interval)
+    - cron: "7,22,37,52 * * * *"   # every 15 min, off-peak minutes (GitHub drops :00/:15 under load)
   workflow_dispatch: {}
 permissions:
   contents: write
