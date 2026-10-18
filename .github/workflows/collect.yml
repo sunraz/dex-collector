@@ -1,10 +1,11 @@
 name: dex-collector-and-detector
 on:
   schedule:
-    - cron: "7,22,37,52 * * * *"   # every 15 min, off-peak minutes (GitHub drops :00/:15 under load)
+    - cron: "7,22,37,52 * * * *"   # backup trigger, GitHub may skip it
   workflow_dispatch: {}
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: collector
   cancel-in-progress: false
@@ -26,3 +27,16 @@ jobs:
           git diff --cached --quiet || git commit -m "snapshot $(date -u +%FT%TZ)"
           git pull --rebase -q || true
           git push
+  next:
+    # Self-chaining loop: wait ~14 min then dispatch this same workflow again, so it does not depend on GitHub cron.
+    needs: snapshot
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: wait then re-dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 840
+          gh workflow run collect.yml --repo "${{ github.repository }}" --ref main
