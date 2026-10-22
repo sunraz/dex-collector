@@ -1,7 +1,7 @@
 name: dex-collector-and-detector
 on:
-  schedule:
-    - cron: "7,22,37,52 * * * *"   # backup trigger, GitHub may skip it
+  # schedule הוסר 22/10 (פקודת סאן): המפעל עבר לשרת שימי.wtf — cron dex-collector-15min (job-01M5HQBXMKGY2J8X1YRCSTDEJ2)
+  workflow_dispatch: {}
   workflow_dispatch: {}
 permissions:
   contents: write
